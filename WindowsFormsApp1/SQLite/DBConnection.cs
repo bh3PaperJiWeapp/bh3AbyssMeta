@@ -88,10 +88,10 @@ namespace WindowsFormsApp1.SQLite
         private void CreateWeaponTable()
         {
             string sql = "CREATE TABLE 'main'.'" + CommonConstant.TABLE_NAME_WEAPON + "' " +
-                         "('id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                         " 'name' TEXT NOT NULL," +
-                         " 'file_path' TEXT NOT NULL, " +
-                         " 'category_id' INTEGER NOT NULL); ";
+                         "('" + WeaponDao.DB_ID + "' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                         " '" + WeaponDao.DB_NAME + "' TEXT NOT NULL," +
+                         " '" + WeaponDao.DB_FILE_PATH + "' TEXT NOT NULL, " +
+                         " '" + WeaponDao.DB_WEAPON_CATEGORY_ID + "' INTEGER NOT NULL); ";
             SQLiteCommand sqLiteCommand = new SQLiteCommand(sql, sqLiteConnection);
             sqLiteCommand.ExecuteNonQuery();
 
@@ -101,10 +101,10 @@ namespace WindowsFormsApp1.SQLite
         private void CreateStigmataTable()
         {
             string sql = "CREATE TABLE 'main'.'" + CommonConstant.TABLE_NAME_STIGMATA + "' " +
-                         "('id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                         " 'name' TEXT NOT NULL," +
-                         " 'file_path' TEXT NOT NULL" +
-                         " ); ";
+                         "('" + StigmataDao.DB_ID + "' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                         " '" + StigmataDao.DB_NAME + "' TEXT NOT NULL," +
+                         " '" + StigmataDao.DB_FILE_PATH + "' TEXT NOT NULL, " +
+                         " '" + StigmataDao.DB_STIGMATA_CATEGORY_ID + "' INTEGER NOT NULL); ";
             SQLiteCommand sqLiteCommand = new SQLiteCommand(sql, sqLiteConnection);
             sqLiteCommand.ExecuteNonQuery();
 

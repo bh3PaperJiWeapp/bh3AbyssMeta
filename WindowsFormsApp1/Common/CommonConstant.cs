@@ -30,6 +30,13 @@ namespace WindowsFormsApp1.Common
                 
         }
 
+        public enum StigmataType
+        {
+            上,
+            中,
+            下
+        }
+
 
     }
 }

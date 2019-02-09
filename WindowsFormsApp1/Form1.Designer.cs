@@ -134,7 +134,7 @@
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(345, 917);
+            this.dataGridView1.Size = new System.Drawing.Size(237, 717);
             this.dataGridView1.TabIndex = 7;
             // 
             // ID
@@ -197,7 +197,7 @@
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1532, 206);
+            this.pictureBox1.Size = new System.Drawing.Size(1655, 206);
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
             // 
@@ -221,15 +221,15 @@
             this.panel1.Controls.Add(this.weaponLabel1);
             this.panel1.Controls.Add(this.characterLabel1);
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(357, 66);
+            this.panel1.Location = new System.Drawing.Point(249, 66);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1532, 312);
+            this.panel1.Size = new System.Drawing.Size(1655, 259);
             this.panel1.TabIndex = 13;
             // 
             // stigmataLabel3
             // 
             this.stigmataLabel3.AutoSize = true;
-            this.stigmataLabel3.Location = new System.Drawing.Point(783, 250);
+            this.stigmataLabel3.Location = new System.Drawing.Point(757, 218);
             this.stigmataLabel3.Name = "stigmataLabel3";
             this.stigmataLabel3.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel3.TabIndex = 14;
@@ -238,7 +238,7 @@
             // stigmataLabel2
             // 
             this.stigmataLabel2.AutoSize = true;
-            this.stigmataLabel2.Location = new System.Drawing.Point(611, 250);
+            this.stigmataLabel2.Location = new System.Drawing.Point(585, 218);
             this.stigmataLabel2.Name = "stigmataLabel2";
             this.stigmataLabel2.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel2.TabIndex = 13;
@@ -247,7 +247,7 @@
             // stigmataLabel1
             // 
             this.stigmataLabel1.AutoSize = true;
-            this.stigmataLabel1.Location = new System.Drawing.Point(432, 250);
+            this.stigmataLabel1.Location = new System.Drawing.Point(406, 218);
             this.stigmataLabel1.Name = "stigmataLabel1";
             this.stigmataLabel1.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel1.TabIndex = 12;
@@ -256,7 +256,7 @@
             // weaponLabel1
             // 
             this.weaponLabel1.AutoSize = true;
-            this.weaponLabel1.Location = new System.Drawing.Point(257, 250);
+            this.weaponLabel1.Location = new System.Drawing.Point(231, 218);
             this.weaponLabel1.Name = "weaponLabel1";
             this.weaponLabel1.Size = new System.Drawing.Size(41, 12);
             this.weaponLabel1.TabIndex = 11;
@@ -265,7 +265,7 @@
             // characterLabel1
             // 
             this.characterLabel1.AutoSize = true;
-            this.characterLabel1.Location = new System.Drawing.Point(54, 250);
+            this.characterLabel1.Location = new System.Drawing.Point(28, 218);
             this.characterLabel1.Name = "characterLabel1";
             this.characterLabel1.Size = new System.Drawing.Size(41, 12);
             this.characterLabel1.TabIndex = 10;
@@ -281,15 +281,15 @@
             this.panel3.Controls.Add(this.weaponLabel2);
             this.panel3.Controls.Add(this.characterLabel2);
             this.panel3.Controls.Add(this.pictureBox2);
-            this.panel3.Location = new System.Drawing.Point(357, 384);
+            this.panel3.Location = new System.Drawing.Point(249, 331);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1532, 312);
+            this.panel3.Size = new System.Drawing.Size(1655, 254);
             this.panel3.TabIndex = 14;
             // 
             // stigmataLabel6
             // 
             this.stigmataLabel6.AutoSize = true;
-            this.stigmataLabel6.Location = new System.Drawing.Point(783, 262);
+            this.stigmataLabel6.Location = new System.Drawing.Point(757, 222);
             this.stigmataLabel6.Name = "stigmataLabel6";
             this.stigmataLabel6.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel6.TabIndex = 19;
@@ -298,7 +298,7 @@
             // stigmataLabel5
             // 
             this.stigmataLabel5.AutoSize = true;
-            this.stigmataLabel5.Location = new System.Drawing.Point(611, 262);
+            this.stigmataLabel5.Location = new System.Drawing.Point(585, 222);
             this.stigmataLabel5.Name = "stigmataLabel5";
             this.stigmataLabel5.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel5.TabIndex = 18;
@@ -307,7 +307,7 @@
             // stigmataLabel4
             // 
             this.stigmataLabel4.AutoSize = true;
-            this.stigmataLabel4.Location = new System.Drawing.Point(432, 262);
+            this.stigmataLabel4.Location = new System.Drawing.Point(406, 222);
             this.stigmataLabel4.Name = "stigmataLabel4";
             this.stigmataLabel4.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel4.TabIndex = 17;
@@ -316,7 +316,7 @@
             // weaponLabel2
             // 
             this.weaponLabel2.AutoSize = true;
-            this.weaponLabel2.Location = new System.Drawing.Point(257, 262);
+            this.weaponLabel2.Location = new System.Drawing.Point(231, 222);
             this.weaponLabel2.Name = "weaponLabel2";
             this.weaponLabel2.Size = new System.Drawing.Size(41, 12);
             this.weaponLabel2.TabIndex = 16;
@@ -325,7 +325,7 @@
             // characterLabel2
             // 
             this.characterLabel2.AutoSize = true;
-            this.characterLabel2.Location = new System.Drawing.Point(54, 262);
+            this.characterLabel2.Location = new System.Drawing.Point(28, 222);
             this.characterLabel2.Name = "characterLabel2";
             this.characterLabel2.Size = new System.Drawing.Size(41, 12);
             this.characterLabel2.TabIndex = 15;
@@ -338,7 +338,7 @@
             this.pictureBox2.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(1532, 206);
+            this.pictureBox2.Size = new System.Drawing.Size(1655, 206);
             this.pictureBox2.TabIndex = 9;
             this.pictureBox2.TabStop = false;
             // 
@@ -352,15 +352,15 @@
             this.panel4.Controls.Add(this.weaponLabel3);
             this.panel4.Controls.Add(this.characterLabel3);
             this.panel4.Controls.Add(this.pictureBox3);
-            this.panel4.Location = new System.Drawing.Point(357, 702);
+            this.panel4.Location = new System.Drawing.Point(249, 591);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1532, 312);
+            this.panel4.Size = new System.Drawing.Size(1655, 249);
             this.panel4.TabIndex = 14;
             // 
             // stigmataLabel9
             // 
             this.stigmataLabel9.AutoSize = true;
-            this.stigmataLabel9.Location = new System.Drawing.Point(783, 253);
+            this.stigmataLabel9.Location = new System.Drawing.Point(757, 218);
             this.stigmataLabel9.Name = "stigmataLabel9";
             this.stigmataLabel9.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel9.TabIndex = 19;
@@ -369,7 +369,7 @@
             // stigmataLabel8
             // 
             this.stigmataLabel8.AutoSize = true;
-            this.stigmataLabel8.Location = new System.Drawing.Point(611, 253);
+            this.stigmataLabel8.Location = new System.Drawing.Point(585, 218);
             this.stigmataLabel8.Name = "stigmataLabel8";
             this.stigmataLabel8.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel8.TabIndex = 18;
@@ -378,7 +378,7 @@
             // stigmataLabel7
             // 
             this.stigmataLabel7.AutoSize = true;
-            this.stigmataLabel7.Location = new System.Drawing.Point(432, 253);
+            this.stigmataLabel7.Location = new System.Drawing.Point(406, 218);
             this.stigmataLabel7.Name = "stigmataLabel7";
             this.stigmataLabel7.Size = new System.Drawing.Size(41, 12);
             this.stigmataLabel7.TabIndex = 17;
@@ -387,7 +387,7 @@
             // weaponLabel3
             // 
             this.weaponLabel3.AutoSize = true;
-            this.weaponLabel3.Location = new System.Drawing.Point(257, 253);
+            this.weaponLabel3.Location = new System.Drawing.Point(231, 218);
             this.weaponLabel3.Name = "weaponLabel3";
             this.weaponLabel3.Size = new System.Drawing.Size(41, 12);
             this.weaponLabel3.TabIndex = 16;
@@ -396,7 +396,7 @@
             // characterLabel3
             // 
             this.characterLabel3.AutoSize = true;
-            this.characterLabel3.Location = new System.Drawing.Point(54, 253);
+            this.characterLabel3.Location = new System.Drawing.Point(28, 218);
             this.characterLabel3.Name = "characterLabel3";
             this.characterLabel3.Size = new System.Drawing.Size(41, 12);
             this.characterLabel3.TabIndex = 15;
@@ -409,7 +409,7 @@
             this.pictureBox3.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pictureBox3.Location = new System.Drawing.Point(0, 0);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(1532, 206);
+            this.pictureBox3.Size = new System.Drawing.Size(1655, 206);
             this.pictureBox3.TabIndex = 9;
             this.pictureBox3.TabStop = false;
             // 
@@ -420,14 +420,14 @@
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel5.Location = new System.Drawing.Point(0, 66);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(351, 975);
+            this.panel5.Size = new System.Drawing.Size(243, 775);
             this.panel5.TabIndex = 16;
             // 
             // exportButton
             // 
-            this.exportButton.Location = new System.Drawing.Point(12, 923);
+            this.exportButton.Location = new System.Drawing.Point(9, 723);
             this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(319, 49);
+            this.exportButton.Size = new System.Drawing.Size(228, 49);
             this.exportButton.TabIndex = 8;
             this.exportButton.Text = "输出数据";
             this.exportButton.UseVisualStyleBackColor = true;
@@ -437,7 +437,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1904, 1041);
+            this.ClientSize = new System.Drawing.Size(1904, 841);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);

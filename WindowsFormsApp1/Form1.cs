@@ -12,6 +12,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Emgu.CV.XFeatures2D;
 using WindowsFormsApp1.Common;
+using WindowsFormsApp1.Dao;
 using WindowsFormsApp1.Entity;
 using CsvHelper;
 
@@ -29,12 +30,59 @@ namespace WindowsFormsApp1
         private StigmataDataForm _stigmataDataForm;
         private string _folderPathStr;
 
+        private List<PictureBox> pictureBoxList = new List<PictureBox>();
+        private Dictionary<int, List<Label>> labelDic = new Dictionary<int, List<Label>>();
+
+        private int _leftBlank = 220;
+        private int _topBlank = 200;
+        private int _rightBlank = 220;
+        private int _bottomBlank = 170;
+
+        private CharacterDao characterDao = CharacterDao.GetInstance();
+        private WeaponDao weaponDao = WeaponDao.GetInstance();
+        private StigmataDao stigmataDao = StigmataDao.GetInstance();
+
+        private List<Stigmata> stigmataTopList;
+        private List<Stigmata> stigmataCenterList;
+        private List<Stigmata> stigmataBottomList;
+
         private void Form1_Load(object sender, EventArgs e)
         {
             ConfigUtil.CreateConfigXml();
 
             _folderPathStr = ConfigUtil.GetConfigContent(CommonConstant.FOLDER_KEY_ANALYZE);
 
+            pictureBoxList.Add(pictureBox1);
+            pictureBoxList.Add(pictureBox2);
+            pictureBoxList.Add(pictureBox3);
+
+            List<Label> labelList = new List<Label>();
+            labelList.Add(characterLabel1);
+            labelList.Add(weaponLabel1);
+            labelList.Add(stigmataLabel1);
+            labelList.Add(stigmataLabel2);
+            labelList.Add(stigmataLabel3);
+            labelDic.Add(0, labelList);
+
+            labelList = new List<Label>();
+            labelList.Add(characterLabel2);
+            labelList.Add(weaponLabel2);
+            labelList.Add(stigmataLabel4);
+            labelList.Add(stigmataLabel5);
+            labelList.Add(stigmataLabel6);
+            labelDic.Add(1, labelList);
+
+            labelList = new List<Label>();
+            labelList.Add(characterLabel3);
+            labelList.Add(weaponLabel3);
+            labelList.Add(stigmataLabel7);
+            labelList.Add(stigmataLabel8);
+            labelList.Add(stigmataLabel9);
+            labelDic.Add(2, labelList);
+
+            stigmataTopList = stigmataDao.GetStigmatasByCategoryId(CommonConstant.StigmataType.上);
+            stigmataCenterList = stigmataDao.GetStigmatasByCategoryId(CommonConstant.StigmataType.中);
+            stigmataBottomList = stigmataDao.GetStigmatasByCategoryId(CommonConstant.StigmataType.下);
         }
 
         private void RefreshMetaButton_Click(object sender, EventArgs e)
@@ -78,30 +126,61 @@ namespace WindowsFormsApp1
             else _stigmataDataForm.Show();
         }
 
-        private int _leftBlank = 220;
-        private int _topBlank = 170;
-        private int _rightBlank = 220;
-        private int _bottomBlank = 170;
 
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Image<Bgra, byte> a1 = new Image<Bgra, byte>("../../测试图片1.bmp"); //模板
+            Image<Bgra, byte> a1 = new Image<Bgra, byte>("../../测试图片1.jpg"); //模板
 
             int width = a1.Size.Width - _leftBlank - _rightBlank;
             int height = (a1.Size.Height - _topBlank - _bottomBlank) / 3;
             int x = _leftBlank;
             int y = _topBlank;
 
-            //copyImage = copyImage.Resize(pictureBox1.Width, pictureBox1.Height, Inter.Area);
-            var characterDao = Dao.CharacterDao.GetInstance();
-            var characterList = characterDao.GetCharacterList();
 
-            //List<int> syncCharacterList = new List<int>(); 
+            for (int i = 0; i < 3; i++)
+            {
+                var copyImage = a1.Copy(new Rectangle(x, y, width, height));
+                pictureBoxList[i].Image = copyImage.Bitmap;
 
-            var copyImage1 = a1.Copy(new Rectangle(x, y, width, height));
-            pictureBox1.Image = copyImage1.Bitmap;
+                AbyssDeploy abyssDeploy = MatchAbyssDeploy(copyImage);
+                labelDic[i][0].Text = abyssDeploy.character.name;
+                labelDic[i][1].Text = abyssDeploy.weapon.name;
+                labelDic[i][2].Text = abyssDeploy.stigmataTop.name;
+                labelDic[i][3].Text = abyssDeploy.stigmataCenter.name;
+                labelDic[i][4].Text = abyssDeploy.stigmataBottom.name;
 
+                y = y + height;
+            }
+            
+
+        }
+
+        public AbyssDeploy MatchAbyssDeploy(Image<Bgra, byte> modelImage)
+        {
+            AbyssDeploy abyssDeploy = new AbyssDeploy();
+
+            Character matchCharacter = MatchCharacter(modelImage);
+            Weapon matchWeapon = MatchWeapon(modelImage, matchCharacter);
+            Stigmata matchStigmataTop = MatchStigmata(modelImage, stigmataTopList);
+            Stigmata matchStigmataCenter = MatchStigmata(modelImage, stigmataCenterList);
+            Stigmata matchStigmataBottom = MatchStigmata(modelImage, stigmataBottomList);
+
+            abyssDeploy.character = matchCharacter;
+            abyssDeploy.weapon = matchWeapon;
+            abyssDeploy.stigmataTop = matchStigmataTop;
+            abyssDeploy.stigmataCenter = matchStigmataCenter;
+            abyssDeploy.stigmataBottom = matchStigmataBottom;
+
+            return abyssDeploy;
+        }
+
+        public Character MatchCharacter(Image<Bgra, byte> modelImage)
+        {
+            //角色
+            List<Character> characterList = characterDao.GetCharacterList();
+            Character matchCharacter = null;
+            int maxMatchCount = 0;
             foreach (Character character in characterList)
             {
                 int count = 0;
@@ -109,67 +188,73 @@ namespace WindowsFormsApp1
                 {
                     Image<Bgra, byte> characterImage = new Image<Bgra, byte>(character.filePath);
                     long matchTime;
-                    count = FindMatch(copyImage1, characterImage, out matchTime, matches);
+                    count = FindMatch(modelImage, characterImage, out matchTime, matches);
                 }
 
-                if (count > 4)
+                if (count > 4 && count > maxMatchCount)
                 {
-                    MessageBox.Show(character.name + "---" + count);
+                    matchCharacter = character;
+                    maxMatchCount = count;
                 }
-
             }
 
+            return matchCharacter;
+        }
 
-            y = y + height;
+        public Weapon MatchWeapon(Image<Bgra, byte> modelImage, Character matchCharacter)
+        {
+            List<Weapon> weaponList = matchCharacter == null
+                ? weaponDao.GetWeaponList()
+                : weaponDao.GetWeaponsByCategoryId(matchCharacter.weaponCategortId);
 
-            var copyImage2 = a1.Copy(new Rectangle(x, y, width, height));
-            pictureBox2.Image = copyImage2.Bitmap;
-
-            foreach (Character character in characterList)
+            //武器
+            Weapon matchWeapon = null;
+            int maxMatchCount = 0;
+            foreach (Weapon weapon in weaponList)
             {
-                
-
                 int count = 0;
-                using (VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch())
+                using (VectorOfVectorOfDMatch match = new VectorOfVectorOfDMatch())
                 {
-                    Image<Bgra, byte> characterImage = new Image<Bgra, byte>(character.filePath);
+                    Image<Bgra, byte> weaponImage = new Image<Bgra, byte>(weapon.filePath);
                     long matchTime;
-                    count = FindMatch(copyImage2, characterImage, out matchTime, matches);
+                    count = FindMatch(modelImage, weaponImage, out matchTime, match);
                 }
 
-                if (count > 4)
+                if (count > 4 && count > maxMatchCount)
                 {
-                    MessageBox.Show(character.name + "---" + count);
-                    
-                    break;
+                    matchWeapon = weapon;
+                    maxMatchCount = count;
                 }
-
             }
 
-            y = y + height;
+            return matchWeapon;
+        }
 
-            var copyImage3 = a1.Copy(new Rectangle(x, y, width, height));
-            pictureBox3.Image = copyImage3.Bitmap;
-
-            foreach (Character character in characterList)
+        public Stigmata MatchStigmata(Image<Bgra, byte> modelImage, List<Stigmata> matchStigmataList)
+        {
+            if (matchStigmataList == null) return null;
+            //圣痕
+            Stigmata matchStigmata = null;
+            int maxMatchCount = 0;
+            foreach (Stigmata stigmata in matchStigmataList)
             {
-                
-
                 int count = 0;
-                using (VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch())
+                using (VectorOfVectorOfDMatch match = new VectorOfVectorOfDMatch())
                 {
-                    Image<Bgra, byte> characterImage = new Image<Bgra, byte>(character.filePath);
+                    Image<Bgra, byte> stigmataImage = new Image<Bgra, byte>(stigmata.filePath);
                     long matchTime;
-                    count = FindMatch(copyImage3, characterImage, out matchTime, matches);
+                    count = FindMatch(modelImage, stigmataImage, out matchTime, match);
                 }
 
-                if (count > 4)
+                if (count > 4 && count > maxMatchCount)
                 {
-                    MessageBox.Show(character.name + "---" + count);
-                    break;
+                    //MessageBox.Show(stigmata.name + " -- " + count);
+                    maxMatchCount = count;
+                    matchStigmata = stigmata;
                 }
-
             }
+
+            return matchStigmata;
         }
 
 
@@ -238,6 +323,43 @@ namespace WindowsFormsApp1
             TextWriter textWriter = new StreamWriter(Path.Combine(exportPath, fileName), false, Encoding.UTF8);
             var csv = new CsvWriter(textWriter);
 
+            List<AbyssDeploy> abyssDeployList = new List<AbyssDeploy>();
+
+            {
+                Image<Bgra, byte> a1 = new Image<Bgra, byte>("../../测试图片1.jpg"); //模板
+
+                int width = a1.Size.Width - _leftBlank - _rightBlank;
+                int height = (a1.Size.Height - _topBlank - _bottomBlank) / 3;
+                int x = _leftBlank;
+                int y = _topBlank;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var copyImage = a1.Copy(new Rectangle(x, y, width, height));
+                    pictureBoxList[i].Image = copyImage.Bitmap;
+
+                    AbyssDeploy abyssDeploy = MatchAbyssDeploy(copyImage);
+                    abyssDeployList.Add(abyssDeploy);
+
+                    labelDic[i][0].Text = abyssDeploy.character.name;
+                    labelDic[i][1].Text = abyssDeploy.weapon.name;
+                    labelDic[i][2].Text = abyssDeploy.stigmataTop.name;
+                    labelDic[i][3].Text = abyssDeploy.stigmataCenter.name;
+                    labelDic[i][4].Text = abyssDeploy.stigmataBottom.name;
+
+                    y = y + height;
+                }
+            }
+
+            for (int i = 0; i < abyssDeployList.Count; i++)
+            {
+                csv.WriteField<string>(abyssDeployList[i].character.name);
+                csv.WriteField<string>(abyssDeployList[i].weapon.name);
+                csv.WriteField<string>(abyssDeployList[i].stigmataTop.name);
+                csv.WriteField<string>(abyssDeployList[i].stigmataCenter.name);
+                csv.WriteField<string>(abyssDeployList[i].stigmataBottom.name);
+                csv.NextRecord();
+            }
 
             //for (int i = 0; i < guidList.Count; i++)
             //{

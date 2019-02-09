@@ -44,7 +44,7 @@ namespace WindowsFormsApp1.Dao
         public List<Weapon> GetWeaponsByCategoryId(CommonConstant.WeaponType type)
         {
             var dbConn = DBConnection.GetInstance();
-            string sql = "SELECT * FROM " + CommonConstant.TABLE_NAME_WEAPON + " WHERE " + DB_WEAPON_CATEGORY_ID + "=" + type;
+            string sql = "SELECT * FROM " + CommonConstant.TABLE_NAME_WEAPON + " WHERE " + DB_WEAPON_CATEGORY_ID + "=" + type.GetHashCode();
             SQLiteCommand sqLiteCommand = new SQLiteCommand(sql, dbConn.sqLiteConnection);
             SQLiteDataReader dataReader = sqLiteCommand.ExecuteReader();
 

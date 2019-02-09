@@ -78,8 +78,12 @@ namespace WindowsFormsApp1
             {
                 Stigmata stigmata = new Stigmata();
                 string name = Path.GetFileNameWithoutExtension(image.FullName);
+                string stigmataCategoryStr = image.Directory.Name;
+                CommonConstant.StigmataType stigmataType;
+                Enum.TryParse(stigmataCategoryStr, out stigmataType);
 
                 stigmata.name = name;
+                stigmata.categoryId = stigmataType;
                 stigmata.filePath = image.FullName;
 
                 _stigmataDao.Insert(stigmata);
@@ -93,5 +97,6 @@ namespace WindowsFormsApp1
             var list = _stigmataDao.GetStigmataList();
             dataGridView3.DataSource = list;
         }
+
     }
 }
