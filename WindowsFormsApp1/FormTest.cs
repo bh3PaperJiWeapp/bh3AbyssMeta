@@ -169,7 +169,7 @@ namespace WindowsFormsApp1
         {
 
             //Image<Bgra, byte> a = new Image<Bgra, byte>("../../测试图片.bmp"); //模板
-            Image<Bgra, byte> a1 = new Image<Bgra, byte>("../../测试图片1.bmp"); //模板
+            Image<Bgra, byte> a1 = new Image<Bgra, byte>("D:/情报姬项目/深渊Meta数据分析/迪拉克/QQ图片20190211004621.jpg"); //模板
             //Image<Bgra, byte> 神恩 = new Image<Bgra, byte>("../../神恩.png"); //待匹配的图像
             //Image<Bgra, byte> b = new Image<Bgra, byte>("../../空之律者.png"); //待匹配的图像
             //Image<Bgra, byte> 次元 = new Image<Bgra, byte>("../../次元.png"); //待匹配的图像
@@ -177,7 +177,7 @@ namespace WindowsFormsApp1
             //Image<Bgra, byte> b = new Image<Bgra, byte>("../../Weapon_Fist_21.png"); //待匹配的图像
             //Image<Bgra, byte> b = new Image<Bgra, byte>("../../五行提尔.png"); //待匹配的图像
             //Image<Bgra, byte> b = new Image<Bgra, byte>("../../第六夜想曲.png"); //待匹配的图像
-            Image<Bgra, byte> b = new Image<Bgra, byte>("../../次元2.jpg"); //待匹配的图像
+            Image<Bgra, byte> b = new Image<Bgra, byte>("D:/情报姬项目/深渊Meta数据分析/主目录/角色/拳套/炽翎.png"); //待匹配的图像
             //Image<Bgra, byte> b = new Image<Bgra, byte>(@"D:\情报姬项目\深渊Meta数据分析\AbyssMetaMain\图鉴库\女武神\十字架\神恩.png"); //待匹配的图像
 
             int _leftBlank = 220;
@@ -440,6 +440,16 @@ namespace WindowsFormsApp1
         }
 
         private void button6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
         {
 
         }

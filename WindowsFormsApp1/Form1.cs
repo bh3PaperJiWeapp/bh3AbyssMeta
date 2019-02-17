@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
@@ -15,6 +16,7 @@ using WindowsFormsApp1.Common;
 using WindowsFormsApp1.Dao;
 using WindowsFormsApp1.Entity;
 using CsvHelper;
+using WaitHandle = System.Threading.WaitHandle;
 
 namespace WindowsFormsApp1
 {
@@ -23,6 +25,7 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
         }
 
         private CharacterDataForm _characterDataForm;
@@ -33,10 +36,10 @@ namespace WindowsFormsApp1
         private List<PictureBox> pictureBoxList = new List<PictureBox>();
         private Dictionary<int, List<Label>> labelDic = new Dictionary<int, List<Label>>();
 
-        private int _leftBlank = 220;
-        private int _topBlank = 200;
-        private int _rightBlank = 220;
-        private int _bottomBlank = 170;
+        private double _leftBlankCoefficient = 0;
+        private double _topBlankCoefficient = 0;
+        private double _rightBlankCoefficient = 0;
+        private double _bottomBlankCoefficient = 0;
 
         private CharacterDao characterDao = CharacterDao.GetInstance();
         private WeaponDao weaponDao = WeaponDao.GetInstance();
@@ -45,6 +48,7 @@ namespace WindowsFormsApp1
         private List<Stigmata> stigmataTopList;
         private List<Stigmata> stigmataCenterList;
         private List<Stigmata> stigmataBottomList;
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -99,6 +103,8 @@ namespace WindowsFormsApp1
             AbyssMetaFolderTextBox.Text = _folderPathStr;
 
             ConfigUtil.SetConfigContent(CommonConstant.FOLDER_KEY_ANALYZE, _folderPathStr);
+
+            LoadAbyssDeployImage();
         }
 
         private void 角色数据窗口ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -127,50 +133,90 @@ namespace WindowsFormsApp1
         }
 
 
-
-        private void button1_Click(object sender, EventArgs e)
+        private void LoadAbyssDeployImage()
         {
-            Image<Bgra, byte> a1 = new Image<Bgra, byte>("../../测试图片1.jpg"); //模板
-
-            int width = a1.Size.Width - _leftBlank - _rightBlank;
-            int height = (a1.Size.Height - _topBlank - _bottomBlank) / 3;
-            int x = _leftBlank;
-            int y = _topBlank;
-
-
-            for (int i = 0; i < 3; i++)
+            string folderPathStr = AbyssMetaFolderTextBox.Text;
+            try
             {
-                var copyImage = a1.Copy(new Rectangle(x, y, width, height));
-                pictureBoxList[i].Image = copyImage.Bitmap;
+                DirectoryInfo root = new DirectoryInfo(folderPathStr);
+                var pngImageList = root.GetFiles("*.png", SearchOption.AllDirectories);
+                var jpgImageList = root.GetFiles("*.jpg", SearchOption.AllDirectories);
 
-                AbyssDeploy abyssDeploy = MatchAbyssDeploy(copyImage);
-                labelDic[i][0].Text = abyssDeploy.character.name;
-                labelDic[i][1].Text = abyssDeploy.weapon.name;
-                labelDic[i][2].Text = abyssDeploy.stigmataTop.name;
-                labelDic[i][3].Text = abyssDeploy.stigmataCenter.name;
-                labelDic[i][4].Text = abyssDeploy.stigmataBottom.name;
+                List<FileInfo> imageList = new List<FileInfo>();
+                imageList.AddRange(pngImageList);
+                imageList.AddRange(jpgImageList);
 
-                y = y + height;
+                if (imageList == null || imageList.Count == 0)
+                {
+                    MessageBox.Show("目录下没有找到图片文件");
+                    return;
+                }
+
+                UpdateMatchImageDataGridView(imageList);
             }
-            
-
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        public AbyssDeploy MatchAbyssDeploy(Image<Bgra, byte> modelImage)
+        private void UpdateMatchImageDataGridView(List<FileInfo> imageList)
+        { 
+            if (imageList == null) return;
+
+            dataGridView1.Rows.Clear();
+
+            foreach (FileInfo fileInfo in imageList)
+            {
+                int rowIndex = dataGridView1.Rows.Add();
+                dataGridView1.Rows[rowIndex].Cells[0].Value = rowIndex + 1;
+                dataGridView1.Rows[rowIndex].Cells[1].Value = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+                dataGridView1.Rows[rowIndex].Cells[2].Value = fileInfo.FullName;
+            }
+            
+        }
+
+
+        public AbyssDeploy MatchAbyssDeploy(Image<Bgra, byte> modelImage, int index)
         {
             AbyssDeploy abyssDeploy = new AbyssDeploy();
 
             Character matchCharacter = MatchCharacter(modelImage);
-            Weapon matchWeapon = MatchWeapon(modelImage, matchCharacter);
-            Stigmata matchStigmataTop = MatchStigmata(modelImage, stigmataTopList);
-            Stigmata matchStigmataCenter = MatchStigmata(modelImage, stigmataCenterList);
-            Stigmata matchStigmataBottom = MatchStigmata(modelImage, stigmataBottomList);
+            if (matchCharacter != null)
+            {
+                abyssDeploy.character = matchCharacter;
+                labelDic[index][0].Text = abyssDeploy.character.name;
+            }
 
-            abyssDeploy.character = matchCharacter;
-            abyssDeploy.weapon = matchWeapon;
-            abyssDeploy.stigmataTop = matchStigmataTop;
-            abyssDeploy.stigmataCenter = matchStigmataCenter;
-            abyssDeploy.stigmataBottom = matchStigmataBottom;
+            Weapon matchWeapon = MatchWeapon(modelImage, matchCharacter);
+            if (matchWeapon != null)
+            {
+                abyssDeploy.weapon = matchWeapon;
+                labelDic[index][1].Text = abyssDeploy.weapon.name;
+            }
+
+            Stigmata matchStigmataTop = MatchStigmata(modelImage, stigmataTopList);
+            if (matchStigmataTop != null)
+            {
+                abyssDeploy.stigmataTop = matchStigmataTop;
+                labelDic[index][2].Text = abyssDeploy.stigmataTop.name;
+            }
+
+            Stigmata matchStigmataCenter = MatchStigmata(modelImage, stigmataCenterList);
+            if (matchStigmataCenter != null)
+            {
+                abyssDeploy.stigmataCenter = matchStigmataCenter;
+                labelDic[index][3].Text = abyssDeploy.stigmataCenter.name;
+            }
+
+            Stigmata matchStigmataBottom = MatchStigmata(modelImage, stigmataBottomList);
+            if (matchStigmataBottom != null)
+            {
+                abyssDeploy.stigmataBottom = matchStigmataBottom;
+                labelDic[index][4].Text = abyssDeploy.stigmataBottom.name;
+            }
+
 
             return abyssDeploy;
         }
@@ -191,7 +237,7 @@ namespace WindowsFormsApp1
                     count = FindMatch(modelImage, characterImage, out matchTime, matches);
                 }
 
-                if (count > 4 && count > maxMatchCount)
+                if (count >= 4 && count > maxMatchCount)
                 {
                     matchCharacter = character;
                     maxMatchCount = count;
@@ -220,7 +266,7 @@ namespace WindowsFormsApp1
                     count = FindMatch(modelImage, weaponImage, out matchTime, match);
                 }
 
-                if (count > 4 && count > maxMatchCount)
+                if (count >= 4 && count > maxMatchCount)
                 {
                     matchWeapon = weapon;
                     maxMatchCount = count;
@@ -246,7 +292,7 @@ namespace WindowsFormsApp1
                     count = FindMatch(modelImage, stigmataImage, out matchTime, match);
                 }
 
-                if (count > 4 && count > maxMatchCount)
+                if (count >= 4 && count > maxMatchCount)
                 {
                     //MessageBox.Show(stigmata.name + " -- " + count);
                     maxMatchCount = count;
@@ -272,13 +318,15 @@ namespace WindowsFormsApp1
             VectorOfKeyPoint observedKeyPoints = new VectorOfKeyPoint();
 
             int count = 0;
-            using (UMat uModelImage = modelImage.ToUMat())
+            //using (UMat uModelImage = modelImage.ToUMat())
             //				using (UMat uObservedImage = observedImage.ToUMat())
             {
                 SURF surfCPU = new SURF(hessianThresh);
                 //extract features from the object image
                 UMat modelDescriptors = new UMat();
-                surfCPU.DetectAndCompute(uModelImage, null, modelKeyPoints, modelDescriptors, false);
+                //surfCPU.DetectAndCompute(uModelImage, null, modelKeyPoints, modelDescriptors, false);
+                surfCPU.DetectRaw(modelImage, modelKeyPoints);
+                surfCPU.Compute(modelImage, modelKeyPoints, modelDescriptors);
 
                 watch = Stopwatch.StartNew();
 
@@ -312,52 +360,87 @@ namespace WindowsFormsApp1
             return count;
         }
 
-        private void exportButton_Click(object sender, EventArgs e)
-        {
-            exportFolderBrowserDialog.ShowDialog();
-            if (string.IsNullOrEmpty(exportFolderBrowserDialog.SelectedPath)) return;
+        private string exportPath = "";
+        private string fileName = "";
+        private List<AbyssDeploy> exportDataList;
+        private int threadCount = 0;
+        private int threadEndNum = 0;
 
-            string exportPath = exportFolderBrowserDialog.SelectedPath;
-            string fileName = DateTime.Now.ToString("yyyy-MM-dd") + "深渊数据输出.csv";
+        
+        private void StartThreadAnalyze()
+        {
+            exportDataList = new List<AbyssDeploy>();
+
+            List<string> filePathList = new List<string>();
+            List<string> fileNameList = new List<string>();
+            for (int i = 0; i < dataGridView1.RowCount; i++)
+            {
+                fileNameList.Add(dataGridView1.Rows[i].Cells[1].Value.ToString());
+                filePathList.Add(dataGridView1.Rows[i].Cells[2].Value.ToString());
+            }
+
+            threadCount = filePathList.Count;
+            threadEndNum = 0;
+
+            int thread1StartIndex = 0;
+            int thread1EndIndex = threadCount / 2;
+            int thread2StartIndex = thread1EndIndex;
+            int thread2EndIndex = threadCount;
+
+            //开两个线程来完成该分析
+            Thread thread1 = new Thread(new ParameterizedThreadStart((x) =>
+            {
+                for (int i = thread1StartIndex; i < thread1EndIndex; i++)
+                {
+                    analyzeAbyssDeploy(filePathList[i], fileNameList[i]);
+                    threadEndNum += 1;
+                    CheckIsAnalyzeEnd();
+                }
+            }));
+            thread1.IsBackground = false;
+            thread1.Start();
+
+            Thread thread2 = new Thread(new ParameterizedThreadStart((x) =>
+            {
+                for (int i = thread2StartIndex; i < thread2EndIndex; i++)
+                {
+                    analyzeAbyssDeploy(filePathList[i], fileNameList[i]);
+                    threadEndNum += 1;
+                    CheckIsAnalyzeEnd();
+                }
+            }));
+            thread2.IsBackground = false;
+            thread2.Start();
+        }
+
+        private void CheckIsAnalyzeEnd()
+        {
+            if (threadCount == threadEndNum)
+            {
+                ExportCsv();
+            }
+        }
+
+        private void ExportCsv()
+        {
+            if (string.IsNullOrEmpty(exportPath) || string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
 
             TextWriter textWriter = new StreamWriter(Path.Combine(exportPath, fileName), false, Encoding.UTF8);
             var csv = new CsvWriter(textWriter);
 
-            List<AbyssDeploy> abyssDeployList = new List<AbyssDeploy>();
+            if (exportDataList == null) return;
 
+            for (int i = 0; i < exportDataList.Count; i++)
             {
-                Image<Bgra, byte> a1 = new Image<Bgra, byte>("../../测试图片1.jpg"); //模板
-
-                int width = a1.Size.Width - _leftBlank - _rightBlank;
-                int height = (a1.Size.Height - _topBlank - _bottomBlank) / 3;
-                int x = _leftBlank;
-                int y = _topBlank;
-
-                for (int i = 0; i < 3; i++)
-                {
-                    var copyImage = a1.Copy(new Rectangle(x, y, width, height));
-                    pictureBoxList[i].Image = copyImage.Bitmap;
-
-                    AbyssDeploy abyssDeploy = MatchAbyssDeploy(copyImage);
-                    abyssDeployList.Add(abyssDeploy);
-
-                    labelDic[i][0].Text = abyssDeploy.character.name;
-                    labelDic[i][1].Text = abyssDeploy.weapon.name;
-                    labelDic[i][2].Text = abyssDeploy.stigmataTop.name;
-                    labelDic[i][3].Text = abyssDeploy.stigmataCenter.name;
-                    labelDic[i][4].Text = abyssDeploy.stigmataBottom.name;
-
-                    y = y + height;
-                }
-            }
-
-            for (int i = 0; i < abyssDeployList.Count; i++)
-            {
-                csv.WriteField<string>(abyssDeployList[i].character.name);
-                csv.WriteField<string>(abyssDeployList[i].weapon.name);
-                csv.WriteField<string>(abyssDeployList[i].stigmataTop.name);
-                csv.WriteField<string>(abyssDeployList[i].stigmataCenter.name);
-                csv.WriteField<string>(abyssDeployList[i].stigmataBottom.name);
+                csv.WriteField<string>(exportDataList[i].fileName);
+                csv.WriteField<string>(exportDataList[i].character.name);
+                csv.WriteField<string>(exportDataList[i].weapon.name);
+                csv.WriteField<string>(exportDataList[i].stigmataTop.name);
+                csv.WriteField<string>(exportDataList[i].stigmataCenter.name);
+                csv.WriteField<string>(exportDataList[i].stigmataBottom.name);
                 csv.NextRecord();
             }
 
@@ -369,6 +452,116 @@ namespace WindowsFormsApp1
 
             textWriter.Flush();
             textWriter.Close();
+        }
+
+        private void dataGridView1_DoubleClick(object sender, EventArgs e)
+        {
+            string fileName = (string) dataGridView1.CurrentRow.Cells[1].Value;
+            string filePath = (string) dataGridView1.CurrentRow.Cells[2].Value;
+
+            Thread thread = new Thread(new ParameterizedThreadStart((x) =>
+            {
+                analyzeAbyssDeploy(filePath, fileName);
+            }));
+            thread.IsBackground = true;
+            thread.Start();
+            
+        }
+
+        public void analyzeAbyssDeploy(string filePath, string fileName)
+        {
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            List<AbyssDeploy> abyssDeployList = new List<AbyssDeploy>();
+
+            Image<Bgra, byte> a1 = new Image<Bgra, byte>(filePath);
+
+            int _leftBlank = (int) (a1.Size.Width / _leftBlankCoefficient);
+            int _rightBlank = (int) (a1.Size.Width - a1.Size.Width * _rightBlankCoefficient);
+            int _topBlank = (int) (a1.Size.Height / _topBlankCoefficient);
+            int _bottomBlank = (int) (a1.Size.Height - a1.Size.Height * _bottomBlankCoefficient);
+
+            int width = a1.Size.Width - _leftBlank - _rightBlank;
+            int height = (a1.Size.Height - _topBlank - _bottomBlank) / 3;
+            int x = _leftBlank;
+            int y = _topBlank;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var copyImage = a1.Copy(new Rectangle(x, y, width, height));
+                pictureBoxList[i].Image = copyImage.Bitmap;
+
+                AbyssDeploy abyssDeploy = MatchAbyssDeploy(copyImage, i);
+                abyssDeploy.fileName = fileName;
+                abyssDeployList.Add(abyssDeploy);
+
+                y = y + height;
+            }
+            exportDataList.AddRange(abyssDeployList);
+            //return abyssDeployList;
+        }
+
+
+        private void TestMethod()
+        {
+
+            Image<Bgra, byte> a1 = new Image<Bgra, byte>("D:/情报姬项目/深渊Meta数据分析/迪拉克/QQ图片20190211004621.jpg"); //模板
+            
+
+            var _leftBlank = (int) (a1.Size.Width / 8);
+            var _rightBlank = (int) (a1.Size.Width - a1.Size.Width * 0.97);
+            var _topBlank = (int)(a1.Size.Height / 8);
+            var _bottomBlank = (int) (a1.Size.Height - a1.Size.Height * 0.75);
+
+            int width = a1.Size.Width - _leftBlank - _rightBlank;
+            int height = (a1.Size.Height - _topBlank - _bottomBlank) / 3;
+            int x = _leftBlank;
+            int y = _topBlank;
+
+
+            for (int i = 0; i < 3; i++)
+            {
+                var copyImage = a1.Copy(new Rectangle(x, y, width, height));
+                pictureBoxList[i].Image = copyImage.Bitmap;
+
+                AbyssDeploy abyssDeploy = MatchAbyssDeploy(copyImage, i);
+
+                y = y + height;
+            }
+        }
+
+        private void exportPTSYButton_Click(object sender, EventArgs e)
+        {
+            _leftBlankCoefficient = 8;
+            _rightBlankCoefficient = 0.97;
+            _topBlankCoefficient = 5.5;
+            _bottomBlankCoefficient = 0.88;
+
+            exportFolderBrowserDialog.ShowDialog();
+            if (string.IsNullOrEmpty(exportFolderBrowserDialog.SelectedPath)) return;
+
+            exportPath = exportFolderBrowserDialog.SelectedPath;
+            fileName = DateTime.Now.ToString("yyyy-MM-dd") + "普通深渊数据输出.csv";
+
+            StartThreadAnalyze();
+            //TestMethod();
+        }
+
+        private void exportDLKButton_Click(object sender, EventArgs e)
+        {
+            //_leftBlankCoefficient = 8;
+            //_rightBlankCoefficient = 0.97;
+            //_topBlankCoefficient = 8;
+            //_bottomBlankCoefficient = 0.75;
+
+            //exportFolderBrowserDialog.ShowDialog();
+            //if (string.IsNullOrEmpty(exportFolderBrowserDialog.SelectedPath)) return;
+
+            //exportPath = exportFolderBrowserDialog.SelectedPath;
+            //fileName = DateTime.Now.ToString("yyyy-MM-dd") + "迪拉克深渊数据输出.csv";
+
+            //StartThreadAnalyze();
+            TestMethod();
         }
     }
 }

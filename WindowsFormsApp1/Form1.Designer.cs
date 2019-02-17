@@ -42,7 +42,6 @@
             this.武器数据窗口ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.圣痕数据窗口ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.stigmataLabel3 = new System.Windows.Forms.Label();
             this.stigmataLabel2 = new System.Windows.Forms.Label();
@@ -64,7 +63,8 @@
             this.characterLabel3 = new System.Windows.Forms.Label();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.exportButton = new System.Windows.Forms.Button();
+            this.exportDLKButton = new System.Windows.Forms.Button();
+            this.exportPTSYButton = new System.Windows.Forms.Button();
             this.exportFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -130,12 +130,15 @@
             this.FileName,
             this.FolderName});
             this.dataGridView1.Location = new System.Drawing.Point(3, 0);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(237, 717);
             this.dataGridView1.TabIndex = 7;
+            this.dataGridView1.DoubleClick += new System.EventHandler(this.dataGridView1_DoubleClick);
             // 
             // ID
             // 
@@ -143,6 +146,7 @@
             this.ID.HeaderText = "ID";
             this.ID.Name = "ID";
             this.ID.ReadOnly = true;
+            this.ID.Width = 30;
             // 
             // FileName
             // 
@@ -200,16 +204,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(1655, 206);
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(345, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // panel1
             // 
@@ -415,7 +409,8 @@
             // 
             // panel5
             // 
-            this.panel5.Controls.Add(this.exportButton);
+            this.panel5.Controls.Add(this.exportDLKButton);
+            this.panel5.Controls.Add(this.exportPTSYButton);
             this.panel5.Controls.Add(this.dataGridView1);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel5.Location = new System.Drawing.Point(0, 66);
@@ -423,15 +418,25 @@
             this.panel5.Size = new System.Drawing.Size(243, 775);
             this.panel5.TabIndex = 16;
             // 
-            // exportButton
+            // exportDLKButton
             // 
-            this.exportButton.Location = new System.Drawing.Point(9, 723);
-            this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(228, 49);
-            this.exportButton.TabIndex = 8;
-            this.exportButton.Text = "输出数据";
-            this.exportButton.UseVisualStyleBackColor = true;
-            this.exportButton.Click += new System.EventHandler(this.exportButton_Click);
+            this.exportDLKButton.Location = new System.Drawing.Point(123, 723);
+            this.exportDLKButton.Name = "exportDLKButton";
+            this.exportDLKButton.Size = new System.Drawing.Size(108, 49);
+            this.exportDLKButton.TabIndex = 9;
+            this.exportDLKButton.Text = "迪拉克";
+            this.exportDLKButton.UseVisualStyleBackColor = true;
+            this.exportDLKButton.Click += new System.EventHandler(this.exportDLKButton_Click);
+            // 
+            // exportPTSYButton
+            // 
+            this.exportPTSYButton.Location = new System.Drawing.Point(9, 723);
+            this.exportPTSYButton.Name = "exportPTSYButton";
+            this.exportPTSYButton.Size = new System.Drawing.Size(108, 49);
+            this.exportPTSYButton.TabIndex = 8;
+            this.exportPTSYButton.Text = "普通深渊";
+            this.exportPTSYButton.UseVisualStyleBackColor = true;
+            this.exportPTSYButton.Click += new System.EventHandler(this.exportPTSYButton_Click);
             // 
             // Form1
             // 
@@ -442,7 +447,6 @@
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.menuStrip1);
             this.Name = "Form1";
@@ -475,15 +479,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FolderName;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 角色数据窗口ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 武器数据窗口ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 圣痕数据窗口ToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label stigmataLabel3;
         private System.Windows.Forms.Label stigmataLabel2;
@@ -505,8 +505,12 @@
         private System.Windows.Forms.Label weaponLabel3;
         private System.Windows.Forms.Label characterLabel3;
         private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Button exportButton;
+        private System.Windows.Forms.Button exportPTSYButton;
         private System.Windows.Forms.FolderBrowserDialog exportFolderBrowserDialog;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FolderName;
+        private System.Windows.Forms.Button exportDLKButton;
     }
 }
 
